@@ -1,0 +1,11 @@
+- name: Ansble Sample 1
+  become: yes
+  hosts: aws
+  tasks:
+    - name: add nginx package
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - nginx

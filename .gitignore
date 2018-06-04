@@ -14,3 +14,9 @@ crash.log
 #
 # example.tfvarserraform.tfvars
 terraform.tfvars
+
+# vagrant
+.vagrant/
+
+# ansible
+*.retry
