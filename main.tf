@@ -67,12 +67,31 @@ resource "aws_security_group" "admin" {
     }
 }
 
+resource "aws_security_group" "webapp" {
+    name = "webapp"
+    description = "Allow Web inbound traffic"
+    vpc_id = "${aws_vpc.myVPC.id}"
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress {
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
 resource "aws_instance" "micro-ec2" {
     ami = "${var.images["ap-northeast-1"]}"
     instance_type = "t2.micro"
     key_name = "suzuki-aws-ec2"
     vpc_security_group_ids = [
-      "${aws_security_group.admin.id}"
+      "${aws_security_group.admin.id}",
+      "${aws_security_group.webapp.id}"
     ]
     subnet_id = "${aws_subnet.public-a.id}"
     associate_public_ip_address = "true"
