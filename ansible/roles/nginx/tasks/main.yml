@@ -1,4 +1,13 @@
+- name: get niginx topic name
+  shell: amazon-linux-extras | grep nginx | cut -d ' ' -f 5
+  register: topic_name
+
 - name: add nginx package
-  yum:
-    name: "nginx"
-    state: latest
+  shell: amazon-linux-extras install {{ topic_name.stdout }}
+
+- name: start nginx
+  shell: systemctl start nginx.service
+
+- name: enable nginx
+  shell: systemctl enable nginx.service
+

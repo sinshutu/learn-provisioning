@@ -6,7 +6,7 @@ variable "region" {
 
 variable "images" {
     default = {
-        ap-northeast-1 = "ami-59d53d26"
+        ap-northeast-1 = "ami-2724cf58"
     }
 }
 
