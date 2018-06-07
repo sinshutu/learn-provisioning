@@ -1,0 +1,5 @@
+- name: add nginx package
+  yum:
+    name: "nginx"
+    state: present
+    update_cache: yes
