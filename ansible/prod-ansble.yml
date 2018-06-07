@@ -1,11 +1,13 @@
-- name: Ansble Sample 1
+- name: root setup
   become: yes
   hosts: aws
-  tasks:
-    - name: add nginx package
-      apt:
-        name: "{{ item }}"
-        state: present
-        update_cache: yes
-      with_items:
-        - nginx
+  roles:
+    - base
+    - nginx
+
+- name: app setup
+  hosts: aws
+  roles:
+    - rbenv
+  vars_files:
+    - ./vars/vars.yml

@@ -1,8 +1,8 @@
 [aws]
-54.65.241.37
+54.238.161.222
 
 [aws:vars]
-ansible_ssh_user=ubuntu
+ansible_ssh_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/suzuki-aws-ec2.pem
 ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 host_key_cheking=False
