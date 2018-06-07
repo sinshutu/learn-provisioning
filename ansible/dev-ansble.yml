@@ -1,11 +1,13 @@
-- name: Ansble Sample 1
+- name: root setup
   become: yes
   hosts: vagrant
   roles:
     - base
     - nginx
+
+- name: app setup
+  hosts: vagrant
+  roles:
     - rbenv
-  tasks:
-    - name: git clone app
-      git:
-        repo: git@github.com:sinshutu/learn-provisioning.git
+  vars_files:
+    - ./vars/vars.yml

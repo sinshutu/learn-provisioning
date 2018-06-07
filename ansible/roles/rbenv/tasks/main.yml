@@ -1,58 +1,60 @@
-- block
-    - name: does rbenv exist?
-      stat:
-        path: "{{ my_vars.middlewares.rbenv.install_dir }}"
-      register: dir_stat
+- block:
+  - name: does rbenv exist?
+    stat:
+      path: "{{ my_vars.middlewares.rbenv.install_dir }}"
+    register: dir_stat
 
-    - name: install rbenv
-      git:
-        repo: https://github.com/sstephenson/rbenv.git
-        dest: "{{ my_vars.middlewares.rbenv.install_dir }}"
-      when: dir_stat.stat.isdir is not defined and not ansible_check_mode
+  - name: install rbenv
+    git:
+      repo: https://github.com/sstephenson/rbenv.git
+      dest: "{{ my_vars.middlewares.rbenv.install_dir }}"
+    when: dir_stat.stat.isdir is not defined and not ansible_check_mode
 
-    - name: install ruby-build
-      git:
-        repo: https://github.com/sstephenson/ruby-build.git
-        dest: "{{ my_vars.middlewares.rbenv.install_dir }}/plugins/ruby-build"
-      when: dir_stat.stat.isdir is not defined and not ansible_check_mode
+  - name: install ruby-build
+    git:
+      repo: https://github.com/sstephenson/ruby-build.git
+      dest: "{{ my_vars.middlewares.rbenv.install_dir }}/plugins/ruby-build"
+    when: dir_stat.stat.isdir is not defined and not ansible_check_mode
 
-    - name: permit using rbenv to group
-      file:
-        path: "{{ my_vars.middlewares.rbenv.install_dir }}"
-        group: "{{ my_vars.middlewares.rbenv.user_group }}"
-        mode: "2775"
-        state: directory
-        recurse: yes
+  - name: permit using rbenv to group
+    file:
+      path: "{{ my_vars.middlewares.rbenv.install_dir }}"
+      group: "{{ ansible_ssh_user }}"
+      mode: "2775"
+      state: directory
+      recurse: yes
+  become: yes
 
-    - name: set env
-      blockinfile:
-        dest: /root/.bash_profile
-        insertafter: '^PATH=\$PATH:\$HOME/bin$'
-        content: |
-          export RBENV_ROOT={{ my_vars.middlewares.rbenv.install_dir }}
-          export PATH="$RBENV_ROOT/bin:$PATH"
-          eval "$(rbenv init -)"
+- block:
+  - name: set env
+    blockinfile:
+      dest: /home/{{ ansible_ssh_user }}/.bash_profile
+      insertafter: '^PATH=\$PATH:\$HOME/bin$'
+      content: |
+        export RBENV_ROOT={{ my_vars.middlewares.rbenv.install_dir }}
+        export PATH="$RBENV_ROOT/bin:$PATH"
+        eval "$(rbenv init -)"
 
-    - name: Check rbenv version
-      shell: bash -lc "rbenv versions | grep {{ my_vars.middlewares.rbenv.ruby_version }}"
-      register: rbenv_check_install
-      changed_when: False
-      ignore_errors: yes
+  - name: Check rbenv version
+    shell: bash -lc "rbenv versions | grep {{ my_vars.middlewares.rbenv.ruby_version }}"
+    register: rbenv_check_install
+    changed_when: False
+    ignore_errors: yes
 
-    - name: install ruby
-      shell: bash -lc "rbenv install -v {{ my_vars.middlewares.rbenv.ruby_version }}"
-      when: rbenv_check_install|failed
+  - name: install ruby
+    shell: bash -lc "rbenv install -v {{ my_vars.middlewares.rbenv.ruby_version }}"
+    when: rbenv_check_install|failed
 
-    - name: rbenv rehash
-      shell: bash -lc "rbenv rehash {{ my_vars.middlewares.rbenv.ruby_version }}"
-      when: rbenv_check_install|failed
+  - name: rbenv rehash
+    shell: bash -lc "rbenv rehash {{ my_vars.middlewares.rbenv.ruby_version }}"
+    when: rbenv_check_install|failed
 
-    - name: Check ruby version
-      shell: bash -lc "rbenv version | grep {{ my_vars.middlewares.rbenv.ruby_version }}"
-      register: rbenv_check_default
-      changed_when: False
-      ignore_errors: yes
+  - name: Check ruby version
+    shell: bash -lc "rbenv version | grep {{ my_vars.middlewares.rbenv.ruby_version }}"
+    register: rbenv_check_default
+    changed_when: False
+    ignore_errors: yes
 
-    - name: Set default ruby version
-      shell: bash -lc "rbenv global {{ my_vars.middlewares.rbenv.ruby_version }}"
-      when: rbenv_check_default|failed
+  - name: Set default ruby version
+    shell: bash -lc "rbenv global {{ my_vars.middlewares.rbenv.ruby_version }}"
+    when: rbenv_check_default|failed

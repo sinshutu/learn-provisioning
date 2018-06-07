@@ -1,7 +1,9 @@
 - name: add base package
   yum:
     name: "{{ item }}"
-    state: present
-    update_cache: yes
-    with_items:
-      - git
+    state: latest
+  with_items:
+    - git
+    - gcc-c++
+    - openssl-devel
+    - readline-devel
